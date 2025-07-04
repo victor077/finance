@@ -13,3 +13,67 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum OperationType {
+  COMPRA
+  VENDA
+}
+
+
+model Usuario {
+  id    String @id @default(cuid())
+  nome  String
+  email String @unique
+
+  operacoes Operacao[]
+
+  @@map("usuarios")
+}
+
+model Ativo {
+  id     String @id @default(cuid())
+  codigo String @unique
+  nome   String
+
+  operacoes Operacao[]
+  cotacoes  Cotacao[]
+  // Relação com Posicao removida.
+
+  @@map("ativos")
+}
+
+model Operacao {
+  id String @id @default(cuid())
+
+  usuarioId String @map("usuario_id")
+  ativoId   String @map("ativo_id")
+
+  quantidade    Int     // Quantidade geralmente é um inteiro. Se permitir frações, use Decimal.
+  precoUnitario Decimal @map("preco_unitario") @db.Decimal(10, 2)
+  corretagem    Decimal @map("corretagem") @db.Decimal(10, 2)
+
+  tipoOperacao OperationType @map("tipo_operacao")
+  dataHora     DateTime      @map("data_hora")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  ativo   Ativo   @relation(fields: [ativoId], references: [id])
+
+  // Este índice vai acelerar brutalmente TODAS as consultas de posição de usuário.
+  @@index([usuarioId, ativoId, dataHora(sort: Desc)])
+  @@map("operacoes")
+}
+
+model Cotacao {
+  id String @id @default(cuid()) 
+
+  ativoId String @map("ativo_id") 
+
+  precoUnitario Decimal  @map("preco_unitario") @db.Decimal(10, 2) 
+  dataHora      DateTime @map("data_hora")
+
+  ativo Ativo @relation(fields: [ativoId], references: [id])
+
+  // Adicionando um índice útil para buscar cotações históricas de um ativo.
+  @@index([ativoId, dataHora(sort: Desc)])
+  @@map("cotacoes")
+}
