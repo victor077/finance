@@ -11,7 +11,7 @@
       "forceConsistentCasingInFileNames": true,
       "baseUrl": "./src",
       "paths": {
-        "@prisma": ["plugins/prisma.ts"]
+        "@prisma": ["core/plugins/prisma.ts"]
       }
     },
     "include": ["src"],
