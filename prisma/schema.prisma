@@ -21,9 +21,9 @@ enum OperationType {
 
 model Usuario {
   id    String @id @default(cuid())
-  nome  String
+  name  String
   email String @unique
-  senha  String
+  password  String
   operacoes Operacao[]
   @@map("usuarios")
 }
@@ -31,7 +31,7 @@ model Usuario {
 model Ativo {
   id     String @id @default(cuid())
   codigo String @unique
-  nome   String
+  name   String
 
   operacoes Operacao[]
   cotacoes  Cotacao[]
