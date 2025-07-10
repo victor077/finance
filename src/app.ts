@@ -2,6 +2,9 @@ import prismaPlugin from "core/plugins/prisma";
 import Fastify from "fastify";
 import configPlugin from "core/plugins/config";
 import swaggerPlugin from "core/plugins/swagger";
+import jwtPlugin from "core/plugins/jwt";
+import authenticatePlugin from "core/plugins/authenticate";
+import { userRoutes } from "modules/user/user.routes";
 
 function appBuild() {
   const app = Fastify({
@@ -13,11 +16,9 @@ function appBuild() {
     dependencies: ["config"],
   });
   app.register(prismaPlugin, { dependencies: ["config"] });
-  // app.register(jwtPlugin);
-  // app.register(authenticatePlugin);
-  // app.register(authRoutes, { prefix: "api/" });
-  // app.register(studentRoutes, { prefix: "api/" });
-  // app.register(financeRoutes, { prefix: "api/" });
+  app.register(jwtPlugin, { dependencies: ["config"] });
+  app.register(authenticatePlugin, { dependencies: ["jwt"] });
+  app.register(userRoutes, { prefix: "api/" });
 
   return app;
 }
