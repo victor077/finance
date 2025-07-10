@@ -5,12 +5,13 @@ import swaggerPlugin from "core/plugins/swagger";
 import jwtPlugin from "core/plugins/jwt";
 import authenticatePlugin from "core/plugins/authenticate";
 import { userRoutes } from "modules/user/user.routes";
+import { handleError } from "core/errors/erroHandler";
 
 function appBuild() {
   const app = Fastify({
     logger: true,
   });
-
+  app.setErrorHandler(handleError);
   app.register(configPlugin);
   app.register(swaggerPlugin, {
     dependencies: ["config"],
