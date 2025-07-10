@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import fastifyJwt from "@fastify/jwt";
+import { AppError } from "core/errors/appError";
 
 const authenticatePlugin = fastifyPlugin(
   async (fastify: FastifyInstance) => {
@@ -13,9 +14,7 @@ const authenticatePlugin = fastifyPlugin(
         try {
           await request.jwtVerify();
         } catch (error) {
-          return reply
-            .status(401)
-            .send({ message: "Token inválido ou expirado" });
+          throw new AppError("Token inválido ou expirado", 401);
         }
       }
     );
