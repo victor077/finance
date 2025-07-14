@@ -3,28 +3,30 @@ import { FastifyInstanceToken, TokenID } from "types/fastify";
 import { UserRepository } from "./user.repository";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
-import { RegisterDto } from "./user.dto";
+import { RequestRegisterDto } from "./user.dto";
+import { EmailService } from "infra/email/email.service";
 
 const repository = new UserRepository();
-const service = new UserService(repository);
+const emailService = new EmailService();
+const service = new UserService(repository, emailService);
 const controller = new UserController(service);
 
 export async function userRoutes(fastify: FastifyInstance) {
   const fastifyWithToken = fastify as FastifyInstanceToken;
-  fastify.get(
-    "/user/:id",
+  fastify.get<{ Params: { email: string } }>(
+    "/user/:email",
     {
       schema: {},
       onRequest: [fastifyWithToken.authenticate],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const { sub } = (await request.jwtDecode()) as TokenID;
-      return await controller.getUserByEmail(sub, reply);
+      const { email } = request.params as { email: string };
+      return await controller.findUserByEmail(email, reply);
     }
   );
 
   fastify.post(
-    "/register",
+    "/register-pending",
     {
       schema: {
         body: {
@@ -39,10 +41,10 @@ export async function userRoutes(fastify: FastifyInstance) {
       },
     },
     async (
-      request: FastifyRequest<{ Body: RegisterDto }>,
+      request: FastifyRequest<{ Body: RequestRegisterDto }>,
       reply: FastifyReply
     ) => {
-      return await controller.createUser(request.body, reply);
+      return await controller.createUserPending(request.body, reply);
     }
   );
 }

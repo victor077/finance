@@ -1,21 +1,31 @@
-import { Prisma, Usuario } from "@prisma/client";
+import { Prisma, RegistroPendente, Usuario } from "@prisma/client";
 import {
-  RegisterDto,
+  RegisterUserPeding,
+  RequestRegisterDto,
+  ResponseRegistrationPeding,
   ResponseUserDto,
   UpdateUserDto,
   UserResponseDto,
 } from "./user.dto";
 
 export interface IUserRepository {
-  findByEmail(email: string): Promise<Omit<Usuario, "password">>;
+  findByEmail(email: string): Promise<Usuario | null>;
   createUser(data: Prisma.UsuarioCreateInput): Promise<Usuario>;
-  updateUser(id: string, data: Prisma.UsuarioUpdateInput): Promise<Usuario>;
+  updateUser(id: string): Promise<Usuario>;
   deleteUser(id: string): Promise<Usuario>;
+  createUserPending(
+    data: Prisma.RegistroPendenteCreateInput
+  ): Promise<RegistroPendente>;
+  findPendingRegistration(email: string): Promise<RegistroPendente | null>;
+  deletePedingRegistration(id: number): Promise<RegistroPendente | null>;
 }
 
 export interface IUserService {
-  getUserByEmail(email: string): Promise<UserResponseDto>;
-  createUser(data: RegisterDto): Promise<ResponseUserDto>;
-  updateUser(id: string, data: UpdateUserDto): Promise<UserResponseDto>;
-  deleteUser(id: string): Promise<Usuario>;
+  findUserByEmail(email: string): Promise<UserResponseDto | null>;
+  createUser(data: RequestRegisterDto): Promise<ResponseUserDto | null>;
+  updateUser(data: UpdateUserDto): Promise<UserResponseDto | null>;
+  deleteUser(id: string): Promise<Usuario | null>;
+  createUserPending(
+    data: RegisterUserPeding
+  ): Promise<ResponseRegistrationPeding | null>;
 }

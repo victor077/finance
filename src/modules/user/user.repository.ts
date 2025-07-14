@@ -1,17 +1,13 @@
-import { prisma } from "@prisma";
+import { prisma } from "plugins/prisma";
 import { IUserRepository } from "./user.interface";
-import { Prisma } from "@prisma/client";
+import { Prisma, Usuario } from "@prisma/client";
 
 export class UserRepository implements IUserRepository {
   async findByEmail(email: string) {
-    const prismaUser = await prisma.usuario.findUniqueOrThrow({
+    const prismaUser = await prisma.usuario.findUnique({
       where: { email: email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
     });
+
     return prismaUser;
   }
 
@@ -21,10 +17,10 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  updateUser(id: string, data: Prisma.UsuarioUpdateInput) {
+  updateUser(id: string) {
     return prisma.usuario.update({
-      where: { id },
-      data,
+      where: { id: id },
+      data: {},
     });
   }
 
@@ -32,5 +28,19 @@ export class UserRepository implements IUserRepository {
     return prisma.usuario.delete({
       where: { id },
     });
+  }
+
+  createUserPending(data: Prisma.RegistroPendenteCreateInput) {
+    return prisma.registroPendente.create({
+      data: data,
+    });
+  }
+
+  findPendingRegistration(email: string) {
+    return prisma.registroPendente.findFirst({ where: { email } });
+  }
+
+  deletePedingRegistration(id: number) {
+    return prisma.registroPendente.delete({ where: { id: id } });
   }
 }

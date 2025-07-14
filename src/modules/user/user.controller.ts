@@ -1,17 +1,39 @@
 import { FastifyReply } from "fastify";
 import { IUserService } from "./user.interface";
-import { RegisterDto } from "./user.dto";
+import { registerUserSchema, RequestRegisterDto } from "./user.dto";
+import { AppError } from "errors/appError";
 
 export class UserController {
   constructor(private readonly userService: IUserService) {}
 
-  async getUserByEmail(email: string, reply: FastifyReply) {
-    const user = await this.userService.getUserByEmail(email);
+  async findUserByEmail(email: string, reply: FastifyReply) {
+    const user = await this.userService.findUserByEmail(email);
     return reply.status(200).send({ status: "success", data: user });
   }
 
-  async createUser(userData: RegisterDto, reply: FastifyReply) {
-    const user = await this.userService.createUser(userData);
+  async createUser(userData: RequestRegisterDto, reply: FastifyReply) {
+    const parsedUser = registerUserSchema.safeParse(userData);
+    if (!parsedUser.success) {
+      return new AppError(
+        "Erro de validação nos dados enviados.",
+        400,
+        parsedUser.error
+      );
+    }
+    const user = await this.userService.createUser(parsedUser.data);
     return reply.status(201).send({ status: "success", data: user });
+  }
+
+  async createUserPending(userData: RequestRegisterDto, reply: FastifyReply) {
+    const parsedUser = registerUserSchema.safeParse(userData);
+    if (!parsedUser.success) {
+      return new AppError(
+        "Erro de validação nos dados enviados.",
+        400,
+        parsedUser.error
+      );
+    }
+    const pedingUser = await this.userService.createUserPending(userData);
+    return reply.status(201).send({ status: "sucess", data: pedingUser });
   }
 }

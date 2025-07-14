@@ -1,9 +1,8 @@
 import z from "zod";
 
 export const userSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1, "Nome é obrigatório"),
-  email: z.string().email("Email inválido"),
+  name: z.string().optional(),
+  email: z.string().optional(),
 });
 
 export type UserResponseDto = z.infer<typeof userSchema>;
@@ -14,16 +13,48 @@ export const updateUserSchema = z.object({
 });
 
 export type UpdateUserDto = z.infer<typeof updateUserSchema>;
-
-export const registerSchema = z.object({
+const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$!%&*?])[A-Za-z\d@#$!%&*?]{5,}$/;
+export const registerUserSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().regex(passwordRegex, {
+    message:
+      "A senha deve conter ao menos 5 caracteres, uma letra maiúscula e um caractere especial",
+  }),
 });
 
-export type RegisterDto = z.infer<typeof registerSchema>;
+export type RequestRegisterDto = z.infer<typeof registerUserSchema>;
 
 export interface ResponseUserDto {
   name: string;
   email: string;
 }
+
+export const registerUserPedingSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().regex(passwordRegex, {
+    message:
+      "A senha deve conter ao menos 5 caracteres, uma letra maiúscula e um caractere especial",
+  }),
+});
+
+export type RegisterUserPeding = z.infer<typeof registerUserPedingSchema>;
+
+export type ResponseRegistrationPeding =
+  | {
+      code: "SUCCESS";
+      data: { message: string };
+    }
+  | {
+      code: "USER_ALREADY_EXISTS";
+      data: null;
+    }
+  | {
+      code: "PENDING_REGISTRATION_VALID";
+      data: { email: string };
+    }
+  | {
+      code: "PENDING_REGISTRATION_EXPIRED";
+      data: { message: string };
+    };
