@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import fastifyJwt from "@fastify/jwt";
-import { AppError } from "core/errors/appError";
+import { AppError } from "errors/appError";
 
 const authenticatePlugin = fastifyPlugin(
   async (fastify: FastifyInstance) => {
