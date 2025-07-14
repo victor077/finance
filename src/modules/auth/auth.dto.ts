@@ -1,6 +1,7 @@
 import z from "zod";
 
 export interface ResponseLoginDto {
+  id: string;
   name: string;
   email: string;
 }
@@ -9,4 +10,4 @@ export const loginSchema = z.object({
   password: z.string().min(8),
 });
 
-export type LoginDto = z.infer<typeof loginSchema>;
+export type RequestLoginDto = z.infer<typeof loginSchema>;

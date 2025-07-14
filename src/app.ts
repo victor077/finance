@@ -1,11 +1,12 @@
-import prismaPlugin from "core/plugins/prisma";
+import prismaPlugin from "plugins/prisma";
 import Fastify from "fastify";
-import configPlugin from "core/plugins/config";
-import swaggerPlugin from "core/plugins/swagger";
-import jwtPlugin from "core/plugins/jwt";
-import authenticatePlugin from "core/plugins/authenticate";
+import configPlugin from "plugins/config";
+import swaggerPlugin from "plugins/swagger";
+import jwtPlugin from "plugins/jwt";
+import authenticatePlugin from "plugins/authenticate";
 import { userRoutes } from "modules/user/user.routes";
-import { handleError } from "core/errors/erroHandler";
+import { handleError } from "errors/erroHandler";
+import { authRoutes } from "modules/auth/auth.routes";
 
 function appBuild() {
   const app = Fastify({
@@ -20,6 +21,7 @@ function appBuild() {
   app.register(jwtPlugin, { dependencies: ["config"] });
   app.register(authenticatePlugin, { dependencies: ["jwt"] });
   app.register(userRoutes, { prefix: "api/" });
+  app.register(authRoutes, { prefix: "api/auth" });
 
   return app;
 }
