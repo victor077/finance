@@ -12,7 +12,9 @@ export class EmailService implements IEmailService {
     },
   });
   async sendConfirmationEmail(to: string, token: string): Promise<void> {
-    const confirmationLink = `${process.env.APP_URL}/api/confirm?token=${token}`;
+    console.log("url", process.env.APP_URL);
+
+    const confirmationLink = `${process.env.APP_URL}/api/auth/confirm?token=${token}`;
     await this.transporter.sendMail({
       from: `${process.env.ENVITE_EMAIL}`,
       to,
