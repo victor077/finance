@@ -20,8 +20,9 @@ export async function userRoutes(fastify: FastifyInstance) {
       onRequest: [fastifyWithToken.authenticate],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const { email } = request.params as { email: string };
-      return await controller.findUserByEmail(email, reply);
+      // const { email } = request.params as { email: string };
+      // return await controller.findUserByEmail(email, reply);
+      return "Rota feita para teste de funcionalidade do token"
     }
   );
 
