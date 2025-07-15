@@ -7,14 +7,14 @@ export class EmailService implements IEmailService {
     port: 587,
     secure: false,
     auth: {
-      user: "victodangelosanttos@gmail.com",
-      pass: "flfh tpto olrk fwgw",
+      user: `${process.env.AUTH_USER_EMAIL}`,
+      pass: `${process.env.AUTH_USER_KEY}`,
     },
   });
   async sendConfirmationEmail(to: string, token: string): Promise<void> {
-    const confirmationLink = `http://localhost:3000/confirm?token=${token}`;
+    const confirmationLink = `${process.env.APP_URL}/api/confirm?token=${token}`;
     await this.transporter.sendMail({
-      from: "victodangelosanttos@gmail.com",
+      from: `${process.env.ENVITE_EMAIL}`,
       to,
       subject: "Confirme seu e-mail",
       html: `<p>Clique para confirmar: <a style="
