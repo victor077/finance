@@ -11,12 +11,6 @@ export class UserRepository implements IUserRepository {
     return prismaUser;
   }
 
-  createUser(data: Prisma.UsuarioCreateInput) {
-    return prisma.usuario.create({
-      data: data,
-    });
-  }
-
   updateUser(id: string) {
     return prisma.usuario.update({
       where: { id: id },
@@ -30,21 +24,4 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  createUserPending(data: Prisma.RegistroPendenteCreateInput) {
-    return prisma.registroPendente.create({
-      data: data,
-    });
-  }
-
-  findPendingRegistrationByEmail(email: string) {
-    return prisma.registroPendente.findFirst({ where: { email } });
-  }
-
-  deletePedingRegistration(id: number) {
-    return prisma.registroPendente.delete({ where: { id: id } });
-  }
-
-  findPedingRegistrationByToken(token: string) {
-    return prisma.registroPendente.findFirst({ where: { token } });
-  }
 }

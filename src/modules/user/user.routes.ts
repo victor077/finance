@@ -1,14 +1,11 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { FastifyInstanceToken, TokenID } from "types/fastify";
+import { FastifyInstanceToken } from "types/fastify";
 import { UserRepository } from "./user.repository";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
-import { RequestRegisterDto } from "./user.dto";
-import { EmailService } from "infra/email/email.service";
 
 const repository = new UserRepository();
-const emailService = new EmailService();
-const service = new UserService(repository, emailService);
+const service = new UserService(repository);
 const controller = new UserController(service);
 
 export async function userRoutes(fastify: FastifyInstance) {
@@ -16,55 +13,15 @@ export async function userRoutes(fastify: FastifyInstance) {
   fastify.get<{ Params: { email: string } }>(
     "/user/:email",
     {
-      schema: {},
+      schema: {
+        tags: ["User"],
+      },
       onRequest: [fastifyWithToken.authenticate],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       // const { email } = request.params as { email: string };
       // return await controller.findUserByEmail(email, reply);
-      return "Rota feita para teste de funcionalidade do token"
-    }
-  );
-
-  fastify.post(
-    "/register-pending",
-    {
-      schema: {
-        body: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            email: { type: "string", format: "email" },
-            password: { type: "string", minLength: 6 },
-          },
-          required: ["name", "email", "password"],
-        },
-      },
-    },
-    async (
-      request: FastifyRequest<{ Body: RequestRegisterDto }>,
-      reply: FastifyReply
-    ) => {
-      return await controller.createUserPending(request.body, reply);
-    }
-  );
-
-  fastify.get(
-    "/confirm",
-    {
-      schema: {
-        querystring: {
-          type: "object",
-          properties: {
-            token: { type: "string" },
-          },
-          required: ["token"],
-        },
-      },
-    },
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const { token } = request.query as { token: string };
-      return await controller.createUser(token, reply);
+      return "Rota feita para teste de funcionalidade do token";
     }
   );
 }
