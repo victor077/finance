@@ -16,13 +16,18 @@ export interface IUserRepository {
   createUserPending(
     data: Prisma.RegistroPendenteCreateInput
   ): Promise<RegistroPendente>;
-  findPendingRegistration(email: string): Promise<RegistroPendente | null>;
+  findPendingRegistrationByEmail(
+    email: string
+  ): Promise<RegistroPendente | null>;
   deletePedingRegistration(id: number): Promise<RegistroPendente | null>;
+  findPedingRegistrationByToken(
+    token: string
+  ): Promise<RegistroPendente | null>;
 }
 
 export interface IUserService {
   findUserByEmail(email: string): Promise<UserResponseDto | null>;
-  createUser(data: RequestRegisterDto): Promise<ResponseUserDto | null>;
+  createUser(data: string): Promise<UserResponseDto | null>;
   updateUser(data: UpdateUserDto): Promise<UserResponseDto | null>;
   deleteUser(id: string): Promise<Usuario | null>;
   createUserPending(

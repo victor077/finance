@@ -36,11 +36,15 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  findPendingRegistration(email: string) {
+  findPendingRegistrationByEmail(email: string) {
     return prisma.registroPendente.findFirst({ where: { email } });
   }
 
   deletePedingRegistration(id: number) {
     return prisma.registroPendente.delete({ where: { id: id } });
+  }
+
+  findPedingRegistrationByToken(token: string) {
+    return prisma.registroPendente.findFirst({ where: { token } });
   }
 }

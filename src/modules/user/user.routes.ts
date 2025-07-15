@@ -47,4 +47,23 @@ export async function userRoutes(fastify: FastifyInstance) {
       return await controller.createUserPending(request.body, reply);
     }
   );
+
+  fastify.get(
+    "/confirm",
+    {
+      schema: {
+        querystring: {
+          type: "object",
+          properties: {
+            token: { type: "string" },
+          },
+          required: ["token"],
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { token } = request.query as { token: string };
+      return await controller.createUser(token, reply);
+    }
+  );
 }

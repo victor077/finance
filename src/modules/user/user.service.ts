@@ -2,11 +2,7 @@ import { Prisma } from "@prisma/client";
 import { IUserRepository, IUserService } from "./user.interface";
 import bcrypt from "bcrypt";
 import { AppError } from "errors/appError";
-import {
-  RegisterUserPeding,
-  RequestRegisterDto,
-  ResponseRegistrationPeding,
-} from "./user.dto";
+import { RegisterUserPeding, ResponseRegistrationPeding } from "./user.dto";
 import { IEmailService } from "infra/email/email.interface";
 import { hashedPassword } from "utils.ts/hashed";
 import { generateConfirmationToken } from "utils.ts/dbToken";
@@ -25,30 +21,19 @@ export class UserService implements IUserService {
     };
   }
 
-  async createUser(data: RequestRegisterDto) {
-    // const userExists = await this.userRepository.findByEmail(data.email);
-    // if (userExists) {
-    //   throw new AppError("User already exists", 409);
-    // }
-    // const hashedPassword = await bcrypt.hash(data.password, 12);
-    // const result = await this.userRepository.createUser({
-    //   name: data.name,
-    //   email: data.email,
-    //   password: hashedPassword,
-    // });
-    // const payload = { userId: result.id, email: result.email };
-    // const expirationTime: any = "1h";
-    // const confirmationToken = this.tokenService.generate(
-    //   payload,
-    //   expirationTime
-    // );
-    // await this.emailService.sendConfirmationEmail(
-    //   data.email,
-    //   confirmationToken
-    // );
+  async createUser(token: string) {
+    const userExists = await this.userRepository.findPedingRegistrationByToken(
+      token
+    );
+    if (!userExists) return null;
+    const result = await this.userRepository.createUser({
+      name: userExists.name,
+      email: userExists.email,
+      password: userExists.password,
+    });
     return {
-      name: "victor",
-      email: "em densenvolvimento",
+      name: result.name,
+      email: result.email,
     };
   }
 
@@ -69,7 +54,7 @@ export class UserService implements IUserService {
       return { code: "USER_ALREADY_EXISTS", data: null };
     }
     const pendingRegistration =
-      await this.userRepository.findPendingRegistration(data.email);
+      await this.userRepository.findPendingRegistrationByEmail(data.email);
 
     if (pendingRegistration) {
       const isExpired = new Date() > pendingRegistration.expiresAt;
