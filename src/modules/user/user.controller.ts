@@ -12,14 +12,6 @@ export class UserController {
   }
 
   async createUser(token: string, reply: FastifyReply) {
-    // const parsedUser = registerUserSchema.safeParse(userData);
-    // if (!parsedUser.success) {
-    //   return new AppError(
-    //     "Erro de validação nos dados enviados.",
-    //     400,
-    //     parsedUser.error
-    //   );
-    // }
     const user = await this.userService.createUser(token);
     return reply.status(201).send({ status: "success", data: user });
   }
